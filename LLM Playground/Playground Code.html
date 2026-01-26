@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Parameters: Temperature, Top P, Top K</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #ec4899;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bar-active: linear-gradient(to top, #4f46e5, #818cf8);
+            --bar-inactive: #e2e8f0;
+            --bar-dead: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        header {
+            flex-shrink: 0;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 0.2rem;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            overflow: hidden;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .playground, .info-section {
+            overflow-y: auto;
+            padding-right: 10px;
+            height: 100%;
+        }
+
+        .playground::-webkit-scrollbar, .info-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        .playground::-webkit-scrollbar-thumb, .info-section::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            height: fit-content;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .playground {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        /* --- NEW CONTEXT BOX STYLES --- */
+        .context-box {
+            background: #eff6ff; /* Light indigo background */
+            border: 1px solid #bfdbfe;
+            border-left: 5px solid var(--primary);
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .context-label {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .context-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+
+        /* --- END NEW STYLES --- */
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .value-display {
+            background: var(--bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary);
+            height: 4px;
+        }
+
+        .visualizer-container {
+            position: relative;
+            height: 250px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 1rem 1rem 2rem 1rem; 
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        .bar-wrapper {
+            flex: 1;
+            margin: 0 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+
+        .bar {
+            width: 100%;
+            background: var(--bar-active);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s;
+            position: relative;
+            min-height: 2px;
+        }
+
+        .bar.filtered {
+            background: var(--bar-dead); 
+            opacity: 0.6;
+        }
+
+        .bar.selected {
+            background: var(--secondary);
+            box-shadow: 0 0 10px var(--secondary);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            width: 100%;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bar-percent {
+            position: absolute;
+            top: -20px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .bar-wrapper:hover .bar-percent {
+            opacity: 1;
+        }
+
+        .action-area {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .output-box {
+            font-family: 'Courier New', Courier, monospace;
+            background: white;
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            flex-grow: 1;
+            min-height: 2.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .token-generated {
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+
+        button#generate-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+
+        button#generate-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1rem;
+        }
+        
+        .info-card:last-child { margin-bottom: 0; }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .temp-icon { background: #f59e0b; }
+        .topk-icon { background: #10b981; }
+        .topp-icon { background: #8b5cf6; }
+
+        .info-title {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .info-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .analogy {
+            background: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border-left: 3px solid var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .legend {
+            display:flex; 
+            justify-content:space-between; 
+            font-size:0.75rem; 
+            color:var(--text-muted);
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                height: auto;
+                overflow: auto;
+            }
+            main {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow: visible;
+            }
+            .playground, .info-section {
+                overflow: visible;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>LLM Parameters Explained</h1>
+        <p class="subtitle">Interactive visualization of Temperature, Top P, and Top K</p>
+    </header>
+
+    <main>
+        <!-- Left Column: Interactive Playground -->
+        <section class="card playground">
+            <h2>🎛️ Playground</h2>
+            
+            <!-- NEW: Context Box -->
+            <div class="context-box">
+                <span class="context-label">Input Context:</span>
+                <span class="context-text">"The cat sat on the..."</span>
+            </div>
+            <!-- End Context Box -->
+
+            <div class="controls-grid">
+                <!-- Temperature -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <label for="temp">Temperature</label>
+                        <span id="temp-val" class="value-display">1.0</span>
+                    </div>
+                    <input type="range" id="temp" min="0.1" max="2.0" step="0.1" value="1.0">
+                </div>
+
+                <!-- Top K -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <label for="topk">Top K</label>
+                        <span id="topk-val" class="value-display">0 (Off)</span>
+                    </div>
+                    <input type="range" id="topk" min="0" max="10" step="1" value="0">
+                </div>
+
+                <!-- Top P -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <label for="topp">Top P</label>
+                        <span id="topp-val" class="value-display">1.0</span>
+                    </div>
+                    <input type="range" id="topp" min="0.1" max="1.0" step="0.05" value="1.0">
+                </div>
+            </div>
+
+            <!-- Visualizer -->
+            <div class="visualizer-container" id="visualizer">
+                <!-- Bars will be injected here via JS -->
+            </div>
+
+            <div class="legend">
+                <span><span style="color:var(--primary)">●</span> Available</span>
+                <span><span style="color:var(--bar-dead)">●</span> Filtered</span>
+                <span><span style="color:var(--secondary)">●</span> Selected</span>
+            </div>
+
+            <!-- Action Area -->
+            <div class="action-area">
+                <div class="output-box">
+                    <span>Next Token:</span>
+                    <span id="output-token" class="token-generated">...</span>
+                </div>
+                <button id="generate-btn">Generate</button>
+            </div>
+        </section>
+
+        <!-- Right Column: Infographic -->
+        <section class="info-section">
+            
+            <!-- Temperature Info -->
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="icon-box temp-icon">T</div>
+                    <div class="info-title">Temperature</div>
+                </div>
+                <p class="info-desc">Controls the randomness of the predictions. It scales the logits before Softmax.</p>
+                <div class="analogy">
+                    <strong>Analogy:</strong><br>
+                    <strong>Low (0.1):</strong> Like a conservative robot picking the most obvious word. Very focused, repetitive.<br><br>
+                    <strong>High (1.5+):</strong> Like a creative poet picking unusual words. More diverse, but prone to hallucinations.
+                </div>
+            </div>
+
+            <!-- Top K Info -->
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="icon-box topk-icon">K</div>
+                    <div class="info-title">Top K</div>
+                </div>
+                <p class="info-desc">Limits the next token selection to the <em>K</em> most probable tokens.</p>
+                <div class="analogy">
+                    <strong>Analogy:</strong><br>
+                    A buffet with 100 dishes. You tell the waiter, "Only bring me the top 3 most popular dishes." Everything else is ignored.
+                </div>
+            </div>
+
+            <!-- Top P Info -->
+            <div class="info-card">
+                <div class="info-header">
+                    <div class="icon-box topp-icon">P</div>
+                    <div class="info-title">Top P (Nucleus)</div>
+                </div>
+                <p class="info-desc">Selects the smallest set of tokens whose cumulative probability exceeds <em>P</em>.</p>
+                <div class="analogy">
+                    <strong>Analogy:</strong><br>
+                    You want to be 90% sure you cover the good options. You keep picking the most likely dishes until the probability sum reaches 90%, then you cut off the rest.
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        // --- Data & State ---
+        
+        // UPDATED TOKENS: Now matches the context "The cat sat on the..."
+        const tokens = [
+            { id: 0, word: "mat", logit: 2.5 },     // Highest probability
+            { id: 1, word: "floor", logit: 2.2 },
+            { id: 2, word: "couch", logit: 1.5 },
+            { id: 3, word: "bed", logit: 0.8 },
+            { id: 4, word: "chair", logit: 0.5 },
+            { id: 5, word: "rug", logit: 0.0 },
+            { id: 6, word: "table", logit: -0.5 },
+            { id: 7, word: "car", logit: -1.2 },    // Unlikely
+            { id: 8, word: "sky", logit: -2.0 },    // Unlikely
+            { id: 9, word: "moon", logit: -3.0 }    // Hallucination territory
+        ];
+
+        let state = {
+            temp: 1.0,
+            topK: 0, // 0 means off
+            topP: 1.0
+        };
+
+        // --- DOM Elements ---
+        const els = {
+            temp: document.getElementById('temp'),
+            topk: document.getElementById('topk'),
+            topp: document.getElementById('topp'),
+            tempVal: document.getElementById('temp-val'),
+            topkVal: document.getElementById('topk-val'),
+            toppVal: document.getElementById('topp-val'),
+            visualizer: document.getElementById('visualizer'),
+            output: document.getElementById('output-token'),
+            generateBtn: document.getElementById('generate-btn')
+        };
+
+        // --- Initialization ---
+
+        function init() {
+            createBars();
+            addListeners();
+            updateSimulation();
+        }
+
+        // Create the HTML structure for bars once
+        function createBars() {
+            els.visualizer.innerHTML = '';
+            tokens.forEach((t, i) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'bar-wrapper';
+                
+                // Percent label
+                const percent = document.createElement('div');
+                percent.className = 'bar-percent';
+                percent.id = `pct-${i}`;
+                percent.innerText = '0%';
+                
+                // The Bar
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.id = `bar-${i}`;
+                bar.style.height = '0%';
+                
+                // Token Label
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                label.innerText = t.word;
+
+                wrapper.appendChild(percent);
+                wrapper.appendChild(bar);
+                wrapper.appendChild(label);
+                els.visualizer.appendChild(wrapper);
+            });
+        }
+
+        function addListeners() {
+            els.temp.addEventListener('input', (e) => {
+                state.temp = parseFloat(e.target.value);
+                els.tempVal.innerText = state.temp.toFixed(1);
+                updateSimulation();
+            });
+
+            els.topk.addEventListener('input', (e) => {
+                state.topK = parseInt(e.target.value);
+                els.topkVal.innerText = state.topK === 0 ? "Off" : state.topK;
+                updateSimulation();
+            });
+
+            els.topp.addEventListener('input', (e) => {
+                state.topP = parseFloat(e.target.value);
+                els.toppVal.innerText = state.topP.toFixed(2);
+                updateSimulation();
+            });
+
+            els.generateBtn.addEventListener('click', generateToken);
+        }
+
+        // --- Core Logic ---
+
+        function updateSimulation() {
+            // 1. Apply Temperature (Softmax)
+            // Formula: exp(logit / temp) / sum(exp(logit / temp))
+            let scaledProbs = tokens.map(t => {
+                const score = t.logit / state.temp;
+                return { ...t, score: score };
+            });
+
+            const maxScore = Math.max(...scaledProbs.map(p => p.score));
+            // Subtract max score for numerical stability (standard softmax trick)
+            const expScores = scaledProbs.map(p => Math.exp(p.score - maxScore));
+            const sumExp = expScores.reduce((a, b) => a + b, 0);
+
+            let currentProbs = scaledProbs.map((p, i) => ({
+                id: p.id,
+                word: p.word,
+                prob: expScores[i] / sumExp,
+                originalIndex: i
+            }));
+
+            // Sort by probability (descending) for K and P filtering
+            currentProbs.sort((a, b) => b.prob - a.prob);
+
+            // 2. Apply Top K
+            let kThreshold = 0;
+            if (state.topK > 0 && state.topK < tokens.length) {
+                // Find probability of the K-th item
+                // If Top K is 3, indices 0,1,2 are kept.
+                const cutoffIndex = state.topK - 1;
+                if (cutoffIndex < currentProbs.length) {
+                    kThreshold = currentProbs[cutoffIndex].prob;
+                }
+            }
+
+            // 3. Apply Top P
+            let pThreshold = 0; // Not strictly a threshold, we accumulate
+            let cumulative = 0;
+            const cutoffIndex = currentProbs.findIndex(p => {
+                cumulative += p.prob;
+                return cumulative > state.topP;
+            });
+            
+            // Determine which indices are filtered out
+            // We need a map to check status easily
+            const statusMap = new Array(tokens.length).fill(true); // true = allowed
+
+            currentProbs.forEach((item, index) => {
+                let filtered = false;
+
+                // Top K Check
+                if (state.topK > 0 && index >= state.topK) {
+                    filtered = true;
+                }
+
+                // Top P Check
+                // If we found a cutoff point (index > 0 means items exist)
+                // If Top P is 1.0, cutoffIndex is -1, so this logic never filters
+                if (state.topP < 1.0 && index > cutoffIndex && cutoffIndex !== -1) {
+                    filtered = true;
+                }
+
+                statusMap[item.originalIndex] = !filtered;
+            });
+
+            // 4. Renormalize (Only keep allowed tokens, sum them to 1 again)
+            let totalAllowedProb = 0;
+            currentProbs.forEach(item => {
+                if (statusMap[item.originalIndex]) {
+                    totalAllowedProb += item.prob;
+                }
+            });
+
+            // Final probabilities to render
+            const finalProbs = currentProbs.map(item => {
+                let finalP = 0;
+                if (statusMap[item.originalIndex]) {
+                    finalP = totalAllowedProb > 0 ? (item.prob / totalAllowedProb) : 0;
+                }
+                return {
+                    ...item,
+                    finalProb: finalP,
+                    isFiltered: !statusMap[item.originalIndex]
+                };
+            });
+
+            renderBars(finalProbs);
+        }
+
+        function renderBars(probs) {
+            // probs is sorted by rank, but we need to render by original index to keep bars in word order
+            // So let's convert the sorted array back to an indexable array
+            const renderData = new Array(tokens.length);
+            probs.forEach(p => {
+                renderData[p.originalIndex] = p;
+            });
+
+            renderData.forEach((data, i) => {
+                const bar = document.getElementById(`bar-${i}`);
+                const pct = document.getElementById(`pct-${i}`);
+                
+                // Visual scaling: Multiply by a factor to make bars visible even if small
+                const heightPerc = data.finalProb * 100;
+                
+                bar.style.height = `${Math.max(heightPerc, 1)}%`; // Min 1% height so bar exists
+                
+                if (data.isFiltered) {
+                    bar.classList.add('filtered');
+                    bar.classList.remove('selected');
+                    pct.innerText = 'Cut';
+                    bar.title = `Filtered by K or P`;
+                } else {
+                    bar.classList.remove('filtered');
+                    pct.innerText = (data.finalProb * 100).toFixed(1) + '%';
+                    bar.title = `Probability: ${(data.finalProb * 100).toFixed(2)}%`;
+                }
+            });
+        }
+
+        function generateToken() {
+            // Re-calculate the final probabilities to pick one
+            // (This mimics the logic in updateSimulation, but simplified for sampling)
+            
+            // 1. Softmax
+            let scaledProbs = tokens.map(t => Math.exp((t.logit / state.temp)));
+            const sumExp = scaledProbs.reduce((a, b) => a + b, 0);
+            let currentProbs = scaledProbs.map((p, i) => ({ id: i, prob: p / sumExp }));
+
+            // Sort
+            currentProbs.sort((a, b) => b.prob - a.prob);
+
+            // Filter K
+            if (state.topK > 0) {
+                currentProbs = currentProbs.map((p, i) => ({ ...p, rank: i }));
+                currentProbs = currentProbs.filter(p => p.rank < state.topK);
+            }
+
+            // Filter P
+            if (state.topP < 1.0) {
+                let cum = 0;
+                const keepIds = new Set();
+                for (let p of currentProbs) {
+                    cum += p.prob;
+                    keepIds.add(p.id);
+                    if (cum > state.topP) break;
+                }
+                currentProbs = currentProbs.filter(p => keepIds.has(p.id));
+            }
+
+            // Renormalize for sampling
+            const total = currentProbs.reduce((a, b) => a + b.prob, 0);
+            const normProbs = currentProbs.map(p => ({ id: p.id, prob: p.prob / total }));
+
+            // Sample (Monte Carlo)
+            let r = Math.random();
+            let selectedId = -1;
+            let sumSoFar = 0;
+
+            for (let p of normProbs) {
+                sumSoFar += p.prob;
+                if (r <= sumSoFar) {
+                    selectedId = p.id;
+                    break;
+                }
+            }
+            
+            // Fallback if something went wrong (shouldn't)
+            if (selectedId === -1 && normProbs.length > 0) selectedId = normProbs[0].id;
+
+            // UI Feedback
+            // Reset previous selection
+            document.querySelectorAll('.bar').forEach(b => b.classList.remove('selected'));
+            
+            const selectedBar = document.getElementById(`bar-${selectedId}`);
+            if (selectedBar) {
+                selectedBar.classList.add('selected');
+            }
+
+            // Show text
+            const word = tokens[selectedId].word;
+            els.output.innerText = `"${word}"`;
+            
+            // Animation effect on text
+            els.output.style.transform = "scale(1.2)";
+            setTimeout(() => els.output.style.transform = "scale(1)", 150);
+        }
+
+        // Run
+        init();
+
+    </script>
+</body>
+</html>
