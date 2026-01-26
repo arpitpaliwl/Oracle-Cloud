@@ -1,3 +1,3 @@
-"An interactive playground for exploring LLM sampling parameters (Temperature, Top-K, Top-P) with real-time visualization."
-✅ "Educational tool demonstrating how sampling parameters influence large language model text generation."
+"An interactive playground code for exploring LLM sampling parameters (Temperature, Top-K, Top-P) with real-time visualization."
+✅ "Tool demonstrating how sampling parameters influence large language model text generation."
 ✅ "Live demo environment for understanding the impact of Temperature, Top-K, and Top-P on LLM output diversity and coherence."
