@@ -11,7 +11,7 @@ Ledger Agent is the new General Ledger experience within Oracle Fusion Cloud —
 | # | Title | Link |
 |---|-------|-------|
 | 1 | Getting Started with Ledger Agent | [▶️ Watch on YouTube](https://youtu.be/ZuYnCh5ecwQ) |
-| 2 | Ledger Agent — Deep Dive & Demo | [▶️ Watch on YouTube](https://youtu.be/z2hQ_A3Hcws) |
+| 2 | Ledger Agent — Honest Take and Adoption Guide Deep Dive | [▶️ Watch on YouTube](https://youtu.be/z2hQ_A3Hcws) |
 
 ---
 
@@ -49,14 +49,11 @@ Ledger Agent redefines how accounting teams work with the General Ledger. Instea
 To use Ledger Agent, you need the following:
 
 - **Oracle Fusion Cloud Financials** subscription (Release 26B or later)
-- Access to the **General Ledger** module within Oracle Fusion
-- Appropriate **user roles** assigned (Finance User, GL Controller, or Accounting Manager)
+- Access to the **General Ledger**  within Oracle Fusion (New Workarea)
+- Appropriate **user roles** assigned
 - **Data quality** — high-quality financial inputs lead to clearer, more insightful AI explanations
 - No additional software installation or IT configuration required
 - No formal training needed — just ask questions in natural business language
-
-> ⚠️ **Note on Monitoring Prompts:** Ensure your agent is **published** before testing inbound interactions. Inbound does not work without publishing the agent.  
-> **Redirect/Callback URI** for Google OAuth setup: `https://<podurl>/api/rwdinfra/trap/2/oauth/callback`
 
 ---
 
@@ -257,8 +254,8 @@ Add this as the required Redirect URI in your Google OAuth configuration.
 | 📖 Oracle Fusion Cloud Financials — What's New (26B) | [View Documentation](https://docs.oracle.com/en/cloud/saas/financials/26b/whatsnew/) |
 | 💬 Oracle Cloud Customer Connect — Ledger Agent Community | [Join the Community](https://community.oracle.com/customerconnect/categories/erp-ledger-agent) |
 | 📋 Ledger Agent Adoption Guidance (Oracle Doc) | Available via Oracle Help Center |
-| 🎬 YouTube Tutorial 1 — Getting Started | [Watch Here](https://youtu.be/ZuYnCh5ecwQ) |
-| 🎬 YouTube Tutorial 2 — Deep Dive & Demo | [Watch Here](https://youtu.be/z2hQ_A3Hcws) |
+| 🎬 YouTube Tutorial 1 — Getting Started with Ledger Agent | [Watch Here](https://youtu.be/ZuYnCh5ecwQ) |
+| 🎬 YouTube Tutorial 2 — Honest Take and AAdoption Guide Deep Dive | [Watch Here](https://youtu.be/z2hQ_A3Hcws) |
 
 > 💬 Have questions or suggestions? Feel free to open an **Issue** or start a **Discussion** in this repository!
 
