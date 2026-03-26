@@ -104,7 +104,6 @@ Interact with your financial data using free-form conversation — no IT or repo
 **Example queries:**
 ```
 Compare 6200 Utilities for 100 CK Electronics Holding between Aug-25 Sep-25 show variance %
-Show me Account, in Location, for Period in the US for Ledger
 Show unapproved/unposted/error journals for Manual in USD for Jan-26
 ```
 
@@ -148,7 +147,6 @@ This scenario shows how the agent proactively surfaces accounting process except
 **Sample monitoring prompt:**
 ```
 Journals unapproved for more than a week
-Alert if any manual adjustments to product sales revenue (Account 4000) exceed $10,000
 ```
 
 ---
@@ -188,14 +186,13 @@ Ledger Agent is designed for **function-by-function adoption** — no large or d
 | Daily Accounting Ops | Account analysis / OTBI reports, Create Accounting | → Monitoring Prompts |
 | Ad-hoc Inquiry | Online Inquiry, Saved Searches, SmartView | → Natural Language + Guided Prompts |
 | Operational Checks | Account analysis, Journal reports with conditions | → Monitoring Prompts |
-| Financial Statements | Static reports | → Financial Statements with Narratives *(upcoming)* |
 
 ---
 
 ## Getting Started
 
-### Adoption Principles
-1. Ledger Agent is **additive** — low/no risk to existing processes
+### Adoption Principles suggested by Oracle
+1. Ledger Agent is **additive** — low/no risk to existing processes which we do currently
 2. Use a **progressive, function-by-function methodology**
 3. No large projects — embrace new automation as part of regular activities
 
