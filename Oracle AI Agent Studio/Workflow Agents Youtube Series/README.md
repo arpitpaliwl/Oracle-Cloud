@@ -38,7 +38,8 @@ https://youtu.be/NtGlVaHnPLs
 ▶ **Ep 4.1: AI Nodes Deep Dive**  
 https://youtu.be/FjNxD0nKMr0  
 
-▶ **Ep 4.2: Logic Nodes — Set Variables & Code Node** *(Current Episode)*  
+▶ **Ep 4.2: Logic Nodes — Set Variables & Code Node** 
+https://youtu.be/KoAllP4kcbU
 
 ▶ **Ep 4.3: Data Nodes** *(Coming Soon)*  
 
@@ -56,6 +57,9 @@ https://youtu.be/FjNxD0nKMr0
 - When to use which Nodes within workflow agents
 - How to work with:
   - Variables
+  - LLM
+  - RAG Document Tool
+  - Agents & Workflow
   - Code Nodes
   - APIs & Data Sources  
 - Best practices for scalable agent design  
