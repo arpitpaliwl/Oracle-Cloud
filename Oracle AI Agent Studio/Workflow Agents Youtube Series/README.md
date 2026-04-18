@@ -53,7 +53,7 @@ https://youtu.be/FjNxD0nKMr0
 ## 🧠 What You’ll Learn
 
 - How to structure Workflow Agents effectively  
-- When to use AI Nodes vs Logic Nodes  
+- When to use which Nodes within workflow agents
 - How to work with:
   - Variables
   - Code Nodes
@@ -69,9 +69,8 @@ To get the most out of this series, you should have:
 
 - Basic understanding of Oracle Fusion processes  
 - Familiarity with business workflows (AP, Procurement, HR, etc.)  
-- Optional (for technical users):
+- Familiarity about technical concepts:
   - REST / SOAP APIs  
-  - Oracle Integration Cloud (OIC)  
 
 ---
 
