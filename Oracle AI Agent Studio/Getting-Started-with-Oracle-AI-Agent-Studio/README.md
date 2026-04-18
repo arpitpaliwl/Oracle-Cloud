@@ -26,7 +26,6 @@ This repository is designed to help **Functional Consultants, Technical Consulta
 - [Step-by-Step Learning Roadmap](#-step-by-step-learning-roadmap)
 - [Sample Use Cases](#-sample-use-cases)
 - [Advanced Topics](#-advanced-topics)
-- [Learning Resources](#-learning-resources)
 - [Best Practices](#-best-practices)
 
 ---
