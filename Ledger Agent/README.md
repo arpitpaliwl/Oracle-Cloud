@@ -48,7 +48,7 @@ Ledger Agent redefines how accounting teams work with the General Ledger. Instea
 
 To use Ledger Agent, you need the following:
 
-- **Oracle Fusion Cloud Financials** subscription (Release 26B or later)
+- **Oracle Fusion Cloud Financials** subscription (Release 26B or later**MUST**
 - Access to the **General Ledger**  within Oracle Fusion (New Workarea)
 - Appropriate **user roles** assigned
 - **Data quality** — high-quality financial inputs lead to clearer, more insightful AI explanations
