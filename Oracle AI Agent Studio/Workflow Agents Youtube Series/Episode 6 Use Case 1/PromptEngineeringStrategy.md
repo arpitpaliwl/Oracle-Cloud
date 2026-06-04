@@ -1,7 +1,6 @@
 # Prompt Engineering Strategy
 
-A major portion of this workflow agent relies on carefully engineered LLM prompts to ensure deterministic ERP transaction processing.
-
+A major portion of this workflow agent relies on carefully engineered LLM prompts to ensure deterministic ERP transaction processing. 
 Instead of using generic conversational AI prompts, the workflow uses structured enterprise prompts optimized for:
 
 * JSON extraction
