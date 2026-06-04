@@ -1,12 +1,12 @@
 # Oracle Fusion AP Invoice Processor – Workflow Agent
 
-AI-powered Accounts Payable Invoice Processing Workflow built using Oracle AI Agent Studio and Oracle Fusion Financials.
+AI-powered Accounts Payable Invoice Processing Workflow Agent built using Oracle AI Agent Studio and Oracle Fusion Financials.
 
 ## Overview
 
 This project demonstrates an end-to-end AP Invoice Processing Workflow Agent built inside Oracle AI Agent Studio.
 
-The workflow automates invoice intake, invoice parsing, PO validation, supplier validation, invoice payload generation, and invoice creation directly within Oracle Fusion Financials using REST APIs and Workflow Agents.
+The workflow agent automates invoice intake, invoice parsing, PO validation, supplier validation, invoice payload generation, and invoice creation directly within Oracle Fusion Financials using REST APIs and Workflow Agents.
 
 The solution supports both:
 
