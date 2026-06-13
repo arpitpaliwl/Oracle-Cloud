@@ -88,13 +88,13 @@ flowchart TD
 
 A[User Request]
 
-B[Entity Extraction]
+B[User Details Extraction]
 
-C[Worker Resolution]
+C[Worker Details Fetched]
 
-D[Project Discovery]
+D[Project Discovery using Report]
 
-E[Report Parsing]
+E[Report Base64 Parsing]
 
 F[Project Loop]
 
@@ -127,7 +127,6 @@ I --> J
 | Worker Details                     | Yes  |
 | Business Object Invocation         | Yes  |
 | External REST Integration          | Yes  |
-| BI Publisher Integration           | Yes  |
 | LLM Data Transformation            | Yes  |
 | Dynamic Payload Generation         | Yes  |
 | Parallel Loop Processing           | Yes  |
