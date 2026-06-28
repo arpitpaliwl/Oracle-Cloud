@@ -23,6 +23,19 @@ This guide covers:
 
 ---
 
+## 📂 Files in This Folder
+
+| File | Description |
+|------|-------------|
+| **README.md** *(this file)* | Main Security Guide – Admin & Builder roles for all product pillars |
+| [ExplorerRole-ChatAccess.md](./ExplorerRole-ChatAccess.md) | 💬 Explorer / End-User role for accessing agents via AI Chat |
+| [NewAgentFunctionality-RoleAssignment.md](./NewAgentFunctionality-RoleAssignment.md) | ➕ How to add roles for new agents (Ledger Agent, Payables Agent, etc.) |
+| [SecurityRolesQuickReference.md](./SecurityRolesQuickReference.md) | 📊 All role codes in one quick-lookup table + checklist |
+| [StepByStepSetupGuide.md](./StepByStepSetupGuide.md) | 🔧 Step-by-step walkthrough from Security Console to user assignment |
+| [SecurityArchitecture.md](./SecurityArchitecture.md) | 🏗️ Architecture diagrams, two-tab security model, best practices |
+
+---
+
 ## 📋 Table of Contents
 
 - [Prerequisites](#-prerequisites)
@@ -35,6 +48,8 @@ This guide covers:
   - [Financials (FIN)](#4️⃣-oracle-fusion-cloud-financials-fin)
   - [CRM / Customer Experience (CX)](#5️⃣-oracle-fusion-cloud-crm--customer-experience-cx)
   - [Permitting & Licensing (PSC)](#6️⃣-oracle-permitting-and-licensing-psc)
+- [Explorer Role – Chat Access](#-explorer-role--chat-access)
+- [Adding New Agent Roles](#-adding-new-agent-functionality-roles)
 - [Complete Duty Roles Reference Table](#-complete-duty-roles-reference-table)
 - [Common Issues & Troubleshooting](#-common-issues--troubleshooting)
 - [Official Documentation Links](#-official-documentation-links)
@@ -50,8 +65,9 @@ Before configuring access to AI Agent Studio, ensure the following are completed
 | 1 | **Oracle Fusion Cloud Instance** | Access to an active Oracle Fusion Cloud instance (26B or later) |
 | 2 | **Security Console Access** | You must have the IT Security Manager role or equivalent to configure security in the Security Console |
 | 3 | **Permission Groups Enabled** | Permission Groups must be enabled in the Security Console |
-| 4 | **Generative AI Feature Enabled** | Ensure that Oracle Generative AI features are enabled in your cloud instance |
-| 5 | **Valid Oracle Subscription** | AI Agent Studio requires the appropriate Oracle cloud subscription |
+| 4 | **Profile Options Set** | `ORA_ASE_SAS_INTEGRATION_ENABLED` = Yes and `ORA_HCM_VBCS_PWA_ENABLED` = Yes at Site level |
+| 5 | **Generative AI Feature Enabled** | Ensure that Oracle Generative AI features are enabled in your cloud instance |
+| 6 | **Valid Oracle Subscription** | AI Agent Studio requires the appropriate Oracle cloud subscription |
 
 > **⚠️ Important:** You must enable **Permission Groups** in the Security Console before adding duty roles. Without enabling this setting, the Roles and Permission Groups tab will not be visible on the Role Hierarchy page.
 
@@ -289,6 +305,35 @@ For users who need to configure AI agents within the **Oracle Permitting and Lic
 
 ---
 
+## 💬 Explorer Role – Chat Access
+
+For **end users** who need to access and interact with published AI agents via the **AI Chat** interface (not configure/build agents), a lighter-weight **Explorer Role** is used.
+
+| Requirement | Value |
+|------------|-------|
+| Function Security Privilege | `HRC_ACCESS_AI_AGENT_CHAT_PRIV` (Access Intelligent Agent Chat) |
+| Permission Group | `ORA_DR_FAI_GENERATIVE_AI_AGENT_RUNTIME_DUTY` (Fai Genai Agent Runtime Duty) |
+| Profile Options Required | `ORA_ASE_SAS_INTEGRATION_ENABLED` = Yes, `ORA_HCM_VBCS_PWA_ENABLED` = Yes |
+
+📄 **See full details:** [ExplorerRole-ChatAccess.md](./ExplorerRole-ChatAccess.md)
+
+---
+
+## ➕ Adding New Agent Functionality Roles
+
+When Oracle releases new AI agents (e.g., **Ledger Agent**, **Payables Agent**), additional product-specific roles must be added to user's custom job roles.
+
+| Agent | Additional Roles Needed |
+|-------|------------------------|
+| **Ledger Agent** (GL) | Ledger Inquiry Assistant duty role + Data Access Set |
+| **Payables Agent** (AP) | `ORA_FUN_MANAGE_FIN_AI_AGENT` + `ORA_FUN_MANAGE_FIN_AI_AGENT_HCM` |
+| **HCM Agents** | `ORA_HRC_HCM_AI_AGENT_MANAGEMENT_DUTY` |
+| **SCM Agents** | FAI SCM Administrator Duty |
+
+📄 **See full details & repeatable process:** [NewAgentFunctionality-RoleAssignment.md](./NewAgentFunctionality-RoleAssignment.md)
+
+---
+
 ## 📊 Complete Duty Roles Reference Table
 
 | Product Pillar | Roles & Privileges Tab (Duty Roles) | Roles & Permission Groups Tab (FAI Duty Roles) |
@@ -302,6 +347,7 @@ For users who need to configure AI agents within the **Oracle Permitting and Lic
 | **PSC** | _(None specific – use All Products for PSC privilege)_ | `ORA_DR_FAI_GENERATIVE_AI_AGENT_PSC_ADMINISTRATOR_DUTY` |
 | **GRC** | _(None specific – use All Products for GRC privilege)_ | `ORA_DR_FAI_GENERATIVE_AI_AGENT_GRC_ADMINISTRATOR_DUTY` |
 | **PRJ** | _(None specific – use All Products for PRJ privilege)_ | `ORA_DR_FAI_GENERATIVE_AI_AGENT_PRJ_ADMINISTRATOR_DUTY` |
+| **Explorer (Chat)** | `HRC_ACCESS_AI_AGENT_CHAT_PRIV` (Function Security) | `ORA_DR_FAI_GENERATIVE_AI_AGENT_RUNTIME_DUTY` |
 
 ---
 
@@ -314,8 +360,10 @@ For users who need to configure AI agents within the **Oracle Permitting and Lic
 | Can't create or edit agents | Missing `Manage All Intelligent Agents` privilege | Add `ORA_FAI_MANAGE_ALL_AI_AGENTS` to the Roles and Privileges tab |
 | Access to HCM agents denied | Missing `ORA_HRC_HCM_AI_AGENT_MANAGEMENT_DUTY` | Add the HCM Intelligent Agent duty role to Roles and Privileges tab |
 | Access to FIN agents denied | Missing one or both FIN duty roles | Add both `ORA_FUN_MANAGE_FIN_AI_AGENT_HCM` and `ORA_FUN_MANAGE_FIN_AI_AGENT` |
+| Explorer user can't open AI Chat | Missing `HRC_ACCESS_AI_AGENT_CHAT_PRIV` | Add the privilege under Function Security Policies |
+| Agent not visible in chat | Role not added to Agent Team | Go to AI Agent Studio → Agent Teams → Security tab → Add role |
 | Changes not reflecting for user | Role not assigned to user | Navigate to Users → Find User → Assign the custom job role |
-| Role visible but agent not accessible | Data Security not configured | Ensure data security policies align with the agent's data access requirements |
+| Roles missing in Agent Team LOV | Security sync not run | Run: Import Resource Security Data → Import User/Role Security Data |
 
 ---
 
