@@ -1,93 +1,144 @@
-# Oracle Fusion Agentic App — Invoice Aging Assistant
+# Oracle Fusion Agentic App --- Invoice Aging Assistant
 
-An end-to-end example of building an Oracle Fusion Agentic App that helps Accounts Payable users understand invoice aging, identify outstanding exposure, take contextual actions, and execute controlled business transactions.
+An end-to-end example of building an Oracle Fusion Agentic App for
+invoice aging, contextual invoice actions, payment controls, validation,
+and communications.
 
 ## What I Built
 
-The application is an **Invoice Aging Assistant** for Oracle Fusion Payables.
+The application is an **Invoice Aging Assistant** for Oracle Fusion
+Payables.
 
-Instead of requiring a user to navigate through multiple ERP screens, the Agentic App brings together:
+It brings together: - Invoice aging analysis - Executive visualization -
+Invoice-level details - Contextual actions - Invoice validation -
+Payment creation - Communications - Ask Oracle
 
-- Invoice aging analysis
-- Executive-level visualization
-- Invoice-level details
-- Contextual business actions
-- Invoice validation
-- Payment creation
-- Communications
-- Ask Oracle
-
-The goal was to demonstrate how an Agentic App can move from:
+The overall pattern is:
 
 **Understand → Decide → Act → Communicate**
 
-while keeping Oracle Fusion as the system of record.
+Oracle Fusion remains the system of record.
 
----
-
-# 1. The Business Problem
-
-Accounts Payable users often need to answer questions such as:
-
-- How much is currently unpaid?
-- Which invoices are becoming overdue?
-- Which aging bucket has the highest exposure?
-- Which invoices require attention?
-- Can I validate an invoice?
-- Can I create a payment?
-- What controls must be satisfied before payment?
-
-Traditionally, answering these questions can require navigating across multiple screens and processes.
-
-The idea behind this application was simple:
-
-> What if the ERP could understand the user's intent, assemble the relevant information, highlight what matters, and provide the appropriate next action?
-
-That became the **Invoice Aging Assistant**.
-
----
-
-# 2. Agentic App vs AI Agent
-
-One of the first design decisions was to separate the responsibilities of the AI Agent from the Agentic App.
+## Agent vs Agentic App
 
 ### AI Agent
 
-The AI Agent provides:
-
-- Reasoning
-- Data retrieval
-- Business logic
-- Tool invocation
-- Decision making
-- Transaction execution
+Reasoning, data retrieval, business logic, tool invocation, decision
+support, and transaction execution.
 
 ### Agentic App
 
-The Agentic App provides the user experience:
+Information Displays, Actionable Insights, Communications, Ask Oracle,
+and contextual actions.
 
-- Information Displays
-- Actionable Insights
-- Communications
-- Ask Oracle
-- Contextual actions
+The Agentic App is the user-facing interaction layer over enterprise
+agents and Fusion business processes.
 
-A simplified view:
+## Four Pillars
 
-```text
-                  Agentic App
-                       |
-        +--------------+--------------+
-        |              |              |
-   Information     Actions       Communications
-        |              |              |
-        +--------------+--------------+
-                       |
-                  AI Agent
-                       |
-        +--------------+--------------+
-        |              |              |
-       Data          Logic          Actions
-        |              |              |
-                    Oracle Fusion
-                 System of Record
+1.  **Information Displays** --- show the right information immediately.
+2.  **Actionable Insights** --- move from information to the next
+    business action.
+3.  **Communications** --- distribute business information.
+4.  **Ask Oracle** --- continue interacting with the underlying agent
+    using natural language.
+
+## Architecture
+
+``` text
+                         Agentic App
+                              |
+                       OraMessageHint
+                              |
+                       Workflow Switch
+                              |
+          +-------------------+-------------------+
+          |                   |                   |
+       Summary           InitDisplay            Query
+          |                   |                   |
+          |             Chart + Table       Intent Analysis
+          |                                       |
+          |                              +--------+--------+
+          |                              |                 |
+          |                         Analysis           Action
+          |                              |                 |
+          +------------------------------+-----------------+
+                                         |
+                                   InvokeAction
+                                         |
+                           +-------------+-------------+
+                           |                           |
+                    Validate Invoice              Create Payment
+                           |                           |
+                           +-------------+-------------+
+                                         |
+                                  Oracle Fusion
+                                   System of Record
+```
+
+## Design Principles
+
+### Deterministic business calculations
+
+A Code node calculates invoice aging, unpaid exposure, and bucket
+assignment. The LLM does not calculate financial values.
+
+### Explicit UI contracts
+
+Prompts define which widgets can be used, which fields must be
+displayed, which rows must be rendered, and which actions are available.
+
+### Explicit action context
+
+Row-level actions pass business context such as `AgingBucket`,
+`InvoiceId`, and `InvoiceNumber`.
+
+### Workflow controls transactions
+
+The LLM can understand intent, but deterministic workflow logic controls
+whether a transaction can proceed.
+
+### Business outcome over API metadata
+
+The final experience exposes business-relevant payment information
+rather than raw REST response metadata.
+
+## Repository Structure
+
+``` text
+architecture/
+prompts/
+code/
+actions/
+workflows/
+examples/
+screenshots/
+```
+
+## Key Takeaway
+
+An Agentic App is not simply:
+
+> Put an AI chatbot on top of ERP.
+
+A stronger pattern is:
+
+``` text
+Understand
+    ↓
+Present
+    ↓
+Decide
+    ↓
+Control
+    ↓
+Act
+    ↓
+Communicate
+```
+
+AI provides the intelligence.
+
+The workflow provides the control.
+
+Oracle Fusion remains the system of record.
