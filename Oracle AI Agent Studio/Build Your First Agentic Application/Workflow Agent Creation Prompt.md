@@ -74,3 +74,4 @@ Prepare the invoice communication experience only. Do not send emails or modify 
 The actual email template and recipient are maintained in the application configuration, not in this workflow.
 
 Keep the workflow implementation concise and focus on the required **nodes, connections, conditions, and business logic**. Do not add unnecessary nodes, explanations, widgets, or functionality.
+Note: the actual "Invoice Aging Summary" email — its HTML template, its table of aging buckets, and its recipient — lives in the app config (PAYABLES_INVOICE_AGING.json → templates[]) as an app-defined communication of type "email", not inside this workflow. This branch only decides what to surface as available to send; drafting and sending the templated content is handled by the Communications framework at the app level. If your builder generates workflows and app configs separately, ask for the template as a second step.
