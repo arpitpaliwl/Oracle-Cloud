@@ -50,7 +50,7 @@ Do not calculate or modify chart values.
 
 SECTION 2 — AGING DETAILS
 
-Create a Multi Record widget.
+Create a Multi Record widget
 
 Title:
 Review Invoice Aging
