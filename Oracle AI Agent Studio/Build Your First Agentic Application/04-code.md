@@ -6,8 +6,7 @@
 
 ## Purpose
 
-Calculate invoice aging deterministically. The Code node retrieves
-invoice data and assigns unpaid installments to aging buckets.
+Calculate invoice aging deterministically. The Code node retrieves invoice data and assigns unpaid installments to aging buckets.
 
 ## Code
 
