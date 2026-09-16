@@ -32,10 +32,13 @@ Retrieve invoices for `US1 Business Unit`, calculate overdue aging using the cur
 * 121+ Days
 
 Display the five buckets with invoice count and total unpaid amount. Include a **View Details** action for each bucket.
+[BO] Retrieve Invoices → [Code] Build Invoice Aging (bucket unpaid installments by due date into 0-30 / 31-60 / 61-90 / 91-120 / 121+ Days, always show all 5) → [LLM] Display Invoice Aging (table, one row per bucket, "View Details" action) → END
 
 ### Summary
 
 Retrieve invoices, calculate the same aging buckets plus total overdue installments, total unpaid amount, highest unpaid bucket, highest invoice-count bucket, and 121+ Days totals.
+
+[BO] Fetch Summary Invoice → [Code] Build Invoice Aging Summary (same buckets + totals + highest bucket) → [LLM] Display Aging Summary (short bullet summary) → END
 
 Display a short executive summary.
 
@@ -43,6 +46,8 @@ Display a short executive summary.
 
 Surface one action:
 **Review Invoice Aging** → opens the invoice review/details experience. Do not create a payment here.
+
+[LLM] Plan Create Payment (one action: "Review Invoice Aging", doesn't create a payment) → END
 
 ### Query
 
@@ -66,13 +71,21 @@ Parse `$context.$app.$OraAction` and identify:
 * `CreatePayment`
 * `ValidateInvoice`
 
+[Code] Extract Action (parse $OraAction, which may be an object, a JSON string, or an escaped JSON string — handle all 3; identify ViewDetails / CreatePayment / ValidateInvoice, else UNKNOWN) → [Switch] Action Condition Check → 3 branches
+
+
 Important — read this carefully: $OraAction won't always arrive in a clean, ready-to-use format. Sometimes it's already a usable object, sometimes it's a text string that looks like JSON, and sometimes that text string has extra quote marks around it that need to be cleaned up first. Handle all three cases so the parsing doesn't fail. If none of the three known commands match after parsing, return UNKNOWN instead of crashing or leaving it blank.
 
 **ViewDetails:** Retrieve invoices (same business object/function/BusinessUnit), filter by the selected aging bucket, and display invoice details. Show Validate Invoice for unvalidated invoices and Create Payment for validated invoices.
+[BO] Retrieve Aging Invoice → [Code] Build Selected Bucket Invoices (filter to the clicked bucket) → [LLM] Display Invoice Details (per row: show "Validate Invoice" if unvalidated, "Create Payment" if validated) → END
 
 **ValidateInvoice:** Retrieve the invoice by ID, build the validation payload, call the invoice validation API, and display the result.
+[BO] Retrieve Invoice for Validation → [Code] Build Validation Payload → [BO] Validate Invoice → [LLM] Display Validation Result → END
 
 **CreatePayment:** Retrieve the invoice and verify that it is validated and approved. If eligible, build the payment payload and call the payment creation API. Otherwise, display the reason payment cannot be created.
+[BO] Retrieve Invoice For Payment → [Code] Check Payment Eligibility (eligible only if ValidationStatus = "Validated)[If] eligible?
+True → [Code] Build Payment Data (use your real bank account and payment method values, not placeholders) → [BO] Create Payment  → [LLM] Display Payment Data → END
+False → [LLM] Display Eligibility (explain which condition failed) → END
 
 ### InitCommunications
 
@@ -80,6 +93,9 @@ Prepare the invoice communication experience only. Do not send emails or modify 
 
 The actual email template and recipient are maintained in the application configuration, not in this workflow.
 
-Keep the workflow implementation concise and focus on the required nodes, connections, conditions, and business logic. Do not add unnecessary nodes, explanations, widgets, or functionality.
+Keep it concise — only build what's listed above, no extra nodes or widgets.
+
+Legend: [BO] = Business Object Function node. [Code] = Code node. [LLM] = LLM node. [Switch] = Switch node. [If] = Condition node. Rule: Build every node in the list below as its own node, in order, each connected to the next. Every branch must end on an [LLM] node — never on [Code] or [BO].
+Make sure all nodes are connected at the end and synced
 
 Note: the actual "Invoice Aging Summary" email — its HTML template, its table of aging buckets, and its recipient — lives in the app config (PAYABLES_INVOICE_AGING.json → templates[]) as an app-defined communication of type "email", not inside this workflow. This branch only decides what to surface as available to send; drafting and sending the templated content is handled by the Communications framework at the app level. If your builder generates workflows and app configs separately, ask for the template as a second step.
