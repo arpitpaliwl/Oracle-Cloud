@@ -16,6 +16,11 @@ Create these six branches:
 
 All branches must end at a shared END node.
 
+Which business object and function to use (use these exact names everywhere)
+To look up many invoices at once (used in InitDisplay, Summary, and ViewDetails): business object <>. Every time you call this, pass BusinessUnit = "<>" — don't skip this, it's required every time, not just once.
+To validate an invoice: business object <>
+To create a payment: business object <>.
+
 ### InitDisplay
 
 Retrieve invoices for `US1 Business Unit`, calculate overdue aging using the current date, and group unpaid installments into:
@@ -61,9 +66,11 @@ Parse `$context.$app.$OraAction` and identify:
 * `CreatePayment`
 * `ValidateInvoice`
 
-**ViewDetails:** Retrieve invoices, filter by the selected aging bucket, and display invoice details. Show **Validate Invoice** for unvalidated invoices and **Create Payment** for validated invoices.
+Important — read this carefully: $OraAction won't always arrive in a clean, ready-to-use format. Sometimes it's already a usable object, sometimes it's a text string that looks like JSON, and sometimes that text string has extra quote marks around it that need to be cleaned up first. Handle all three cases so the parsing doesn't fail. If none of the three known commands match after parsing, return UNKNOWN instead of crashing or leaving it blank.
 
-**ValidateInvoice:** Retrieve the invoice, build the validation payload, call the invoice validation API, and display the result.
+**ViewDetails:** Retrieve invoices (same business object/function/BusinessUnit), filter by the selected aging bucket, and display invoice details. Show Validate Invoice for unvalidated invoices and Create Payment for validated invoices.
+
+**ValidateInvoice:** Retrieve the invoice by ID, build the validation payload, call the invoice validation API, and display the result.
 
 **CreatePayment:** Retrieve the invoice and verify that it is validated and approved. If eligible, build the payment payload and call the payment creation API. Otherwise, display the reason payment cannot be created.
 
@@ -73,5 +80,6 @@ Prepare the invoice communication experience only. Do not send emails or modify 
 
 The actual email template and recipient are maintained in the application configuration, not in this workflow.
 
-Keep the workflow implementation concise and focus on the required **nodes, connections, conditions, and business logic**. Do not add unnecessary nodes, explanations, widgets, or functionality.
+Keep the workflow implementation concise and focus on the required nodes, connections, conditions, and business logic. Do not add unnecessary nodes, explanations, widgets, or functionality.
+
 Note: the actual "Invoice Aging Summary" email — its HTML template, its table of aging buckets, and its recipient — lives in the app config (PAYABLES_INVOICE_AGING.json → templates[]) as an app-defined communication of type "email", not inside this workflow. This branch only decides what to surface as available to send; drafting and sending the templated content is handled by the Communications framework at the app level. If your builder generates workflows and app configs separately, ask for the template as a second step.
