@@ -1,0 +1,75 @@
+[
+  {
+    "caseId": "ELIG-001",
+    "description": "Valid meal at cap; receipt not required at exactly $25 is not applicable here",
+    "input": {
+      "expenseCategory": "MEAL",
+      "expenseAmount": 75,
+      "expenseDate": "2026-09-01",
+      "submissionDate": "2026-09-20",
+      "receiptProvided": true,
+      "businessPurpose": "Client workshop",
+      "expenseStatus": "SUBMITTED"
+    }
+  },
+  {
+    "caseId": "ELIG-002",
+    "description": "Exactly $25 does not require receipt",
+    "input": {
+      "expenseCategory": "OTHER_BUSINESS",
+      "expenseAmount": 25,
+      "expenseDate": "2026-09-01",
+      "submissionDate": "2026-09-20",
+      "receiptProvided": false,
+      "businessPurpose": "Office supplies",
+      "expenseStatus": "SUBMITTED"
+    }
+  },
+  {
+    "caseId": "ELIG-003",
+    "description": "Amount above $25 without receipt",
+    "input": {
+      "expenseCategory": "HOTEL",
+      "expenseAmount": 25.01,
+      "expenseDate": "2026-09-01",
+      "submissionDate": "2026-09-20",
+      "receiptProvided": false,
+      "businessPurpose": "Client visit",
+      "expenseStatus": "SUBMITTED"
+    }
+  },
+  {
+    "caseId": "AMT-001",
+    "description": "Meal exceeds cap",
+    "input": {
+      "expenseCategory": "MEAL",
+      "expenseAmount": 100,
+      "eligible": true
+    }
+  },
+  {
+    "caseId": "AMT-002",
+    "description": "Uncapped eligible business expense",
+    "input": {
+      "expenseCategory": "OTHER_BUSINESS",
+      "expenseAmount": 420,
+      "eligible": true
+    }
+  },
+  {
+    "caseId": "APR-001",
+    "description": "Approval threshold exactly 500",
+    "input": {
+      "reimbursableAmount": 500,
+      "expenseCategory": "MEAL"
+    }
+  },
+  {
+    "caseId": "APR-002",
+    "description": "Approval threshold exactly 2000",
+    "input": {
+      "reimbursableAmount": 2000,
+      "expenseCategory": "HOTEL"
+    }
+  }
+]
