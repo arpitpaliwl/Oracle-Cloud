@@ -16,8 +16,6 @@ A companion repository for the **Policy Builder / Policy Nodes** walkthrough. Th
 | `prompts/policy-builder-generation-prompt.md` | Generation prompt with exact function schemas and implementation constraints |
 | `docs/solution-overview.md` | Design, orchestration flow, and implementation notes |
 | `examples/sample-inputs.json` | Representative input scenarios |
-| `tests/expected-results.json` | Expected outcomes for selected policy cases |
-| `tests/test-matrix.md` | Boundary and validation coverage checklist |
 
 ## Policy function design
 
